@@ -7,6 +7,9 @@ import { firebaseConfig } from './firebase.config';
 import router from './router';
 import 'vfonts/Lato.css'
 import 'vfonts/FiraCode.css'
+import dayjs from 'dayjs'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+dayjs.extend(localizedFormat)
 
 firebase.initializeApp(firebaseConfig);
 

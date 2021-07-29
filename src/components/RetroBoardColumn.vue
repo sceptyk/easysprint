@@ -10,7 +10,9 @@
     <n-list>
       <n-list-item v-for="item in data" class="item-wrapper">
         <n-card :key="item.id">
-          <span :class="{ blurred: hideCards }">{{ hideCards ? item.masked : item.content }}</span>
+          <span
+            :class="{ blurred: isCardHidden(item.owner) }"
+          >{{ isCardHidden(item.owner) ? item.masked : item.content }}</span>
           <template #action>
             <n-button size="small" text @click="onRemove(item.id)" type="error">delete</n-button>
           </template>
@@ -24,8 +26,11 @@ import { ref } from '@vue/reactivity';
 import {
   NH3, NText, NList, NListItem, NInput, NButton, NIcon, NCard,
 } from 'naive-ui'
+import { useAuth } from '../services/useAuth';
 
-defineProps<{
+const { currentUser } = useAuth();
+
+const props = defineProps<{
   data: any[],
   hideCards: boolean,
 }>()
@@ -43,6 +48,10 @@ const onPost = () => {
 
 const onRemove = (itemId: string) => {
   emit('remove', itemId);
+}
+
+const isCardHidden = (itemOwner: string) => {
+  return props.hideCards && currentUser.value?.uid !== itemOwner;
 }
 </script>
 <style scoped lang="scss">

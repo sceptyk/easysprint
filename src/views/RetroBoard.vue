@@ -6,24 +6,18 @@
       </n-h1>
     </template>
     <template #extra v-if="isBoardOwner">
-      <n-space>
-        <n-button v-if="!board?.hideCards" @click="onToggleCardVisibility">
-          <template #icon>
-            <n-icon>
-              <hide-icon />
-            </n-icon>
-          </template>
-          Hide card content
-        </n-button>
-        <n-button v-if="board?.hideCards" @click="onToggleCardVisibility">
-          <template #icon>
-            <n-icon>
-              <show-icon />
-            </n-icon>
-          </template>
-          Show card content
-        </n-button>
-      </n-space>
+      <n-switch :value="!board?.hideCards" @update:value="onToggleCardVisibility">
+        <template #checked>
+          <n-icon>
+            <hide-icon />
+          </n-icon>
+        </template>
+        <template #unchecked>
+          <n-icon>
+            <show-icon />
+          </n-icon>
+        </template>
+      </n-switch>
     </template>
   </n-page-header>
   <n-grid x-gap="12" :cols="3">
@@ -32,7 +26,7 @@
         @post="content => onPost('positive', content)"
         @remove="onRemove"
         :data="positives"
-        :hide-cards="board?.hideCards"
+        :hide-cards="!!board?.hideCards"
       >
         <template #header>
           <n-h3>
@@ -46,7 +40,7 @@
         @post="content => onPost('improvable', content)"
         @remove="onRemove"
         :data="improvables"
-        :hide-cards="board?.hideCards"
+        :hide-cards="!!board?.hideCards"
       >
         <template #header>
           <n-h3>
@@ -60,7 +54,7 @@
         @post="content => onPost('actionable', content)"
         @remove="onRemove"
         :data="actionables"
-        :hide-cards="board?.hideCards"
+        :hide-cards="!!board?.hideCards"
       >
         <template #header>
           <n-h3>
@@ -82,7 +76,7 @@ import {
   NGi,
   NButton,
   NIcon,
-  NSpace,
+  NSwitch,
 } from 'naive-ui'
 import RetroBoardColumn from '../components/RetroBoardColumn.vue';
 import { useRoute } from 'vue-router';

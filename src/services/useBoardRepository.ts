@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import firebase from 'firebase/app'
 import { Ref, ref } from 'vue';
 import { Board } from '../types/Board';
@@ -7,9 +6,9 @@ import { BoardItem } from '../types/BoardItem';
 export const useBoardRepository = () => {
   const db = firebase.firestore();
 
-  const fetchBoards = () => {
+  const fetchBoards = (userId: string) => {
     const list: Ref<Board[]> = ref([]);
-    db.collection('boards').orderBy('updatedAt', 'desc').onSnapshot(snapshot => {
+    db.collection('users').doc(userId).collection('boards').orderBy('updatedAt', 'desc').onSnapshot(snapshot => {
       const results: Board[] = [];
       snapshot.forEach(doc => {
         const { title, updatedAt } = doc.data();
@@ -64,12 +63,13 @@ export const useBoardRepository = () => {
     return db.collection('boards').doc(boardId).collection('items').doc(itemId).delete();
   }
 
-  const createBoard = (data: Partial<Board>) => {
-    return db.collection('boards').add({
-      title: `Sprint ${dayjs().format('L')}`,
+  const createBoard = async (data: Partial<Board>) => {
+    const board = {
       ...data,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    })
+    };
+    const { id } = await db.collection('boards').add(board);
+    await db.collection('users').doc(data.owner).collection('boards').doc(id).set(board);
   }
 
   const updateBoard = (boardId: string, data: Partial<Board>) => {
@@ -79,8 +79,11 @@ export const useBoardRepository = () => {
     })
   }
 
-  const removeBoard = (id: string) => {
-    return db.collection('boards').doc(id).delete();
+  const removeBoard = (userId: string, boardId: string) => {
+    return Promise.all([
+      db.collection('boards').doc(boardId).delete(),
+      db.collection('users').doc(userId).collection('boards').doc(boardId).delete(),
+    ]);
   }
 
   return {

@@ -18,6 +18,10 @@ watch(isSignedIn, (value) => {
   if (!value) router.push({ name: 'SignIn' })
 })
 
+watch(isAuthenticating, (value) => {
+  if (!value && !isSignedIn.value) router.push({ name: 'SignIn' })
+})
+
 </script>
 <style scoped>
 .loader-wrapper {
