@@ -14,7 +14,7 @@
             <n-h2>
               <n-text>Retro boards</n-text>
             </n-h2>
-            <n-button type="primary" @click="createBoard">Create board</n-button>
+            <n-button type="primary" @click="onCreateBoard">Create board</n-button>
           </n-space>
         </template>
         <n-list-item v-for="board in boards" :key="board.id">
@@ -24,7 +24,7 @@
             </template>
             <n-space>
               <n-button text @click="openBoard(board.id)">Open</n-button>
-              <n-button text type="error">Delete</n-button>
+              <n-button text type="error" @click="removeBoard(board.id)">Delete</n-button>
             </n-space>
           </n-card>
         </n-list-item>
@@ -48,14 +48,22 @@ import {
   NPageHeader,
 } from 'naive-ui';
 import { useRouter } from 'vue-router';
+import { useAuth } from '../services/useAuth';
 import { useBoardRepository } from '../services/useBoardRepository';
 
-const { fetchBoards, createBoard } = useBoardRepository();
+const { currentUser } = useAuth();
+const { fetchBoards, createBoard, removeBoard } = useBoardRepository();
 const router = useRouter();
 const boards = fetchBoards();
 
 const openBoard = (id: string) => {
   router.push({ name: 'RetroBoard', params: { id } })
+}
+
+const onCreateBoard = () => {
+  createBoard({
+    owner: currentUser.value?.uid,
+  })
 }
 
 </script>

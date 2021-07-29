@@ -1,12 +1,12 @@
 import firebase from 'firebase/app'
 import { ref, Ref } from 'vue';
 
-export const useAuth = () => {
-  let subscription = ref();
-  let currentUser: Ref<firebase.User | null | undefined> = ref(undefined);
-  let isAuthenticating = ref(true);
-  let isSignedIn = ref(false);
+const subscription = ref();
+const currentUser: Ref<firebase.User | null | undefined> = ref();
+const isAuthenticating = ref(true);
+const isSignedIn = ref(false);
 
+export const useAuth = () => {
   const subscribe = () => {
     subscription.value = firebase.auth().onAuthStateChanged(user => {
       currentUser.value = user;

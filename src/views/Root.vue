@@ -41,11 +41,3 @@ const onSignOut = async () => {
   router.push({ name: 'SignIn' });
 }
 </script>
-<style scoped>
-.header {
-  padding: 8px 24px;
-}
-.content {
-  padding: 32px;
-}
-</style>

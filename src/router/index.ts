@@ -11,15 +11,12 @@ const routes: RouteRecordRaw[] = [
     name: 'Root',
     component: Root,
     redirect: { name: 'Dashboard' },
-    beforeEnter: (to) => {
-      if (to.name !== 'SignIn') {
-        const { isSignedIn } = useAuth();
-        if (!isSignedIn) {
-          return { name: 'SignIn' }
-        }
-      }
-    },
     children: [
+      {
+        path: "/sign-in",
+        name: "SignIn",
+        component: SignIn,
+      },
       {
         path: "/dashboard",
         name: 'Dashboard',
@@ -31,11 +28,6 @@ const routes: RouteRecordRaw[] = [
         component: RetroBoard,
       }
     ]
-  },
-  {
-    path: "/sign-in",
-    name: "SignIn",
-    component: SignIn,
   },
 ];
 

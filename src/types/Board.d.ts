@@ -5,4 +5,6 @@ export interface Board {
   title: string;
   updatedAt: string;
   items: BoardItem[];
+  hideCards: boolean;
+  owner: string;
 }

@@ -1,5 +1,5 @@
 <template>
-  <n-space v-if="isAuthenticating" :justify="'center'" :align="'center'" class="loader-wrapper">
+  <n-space v-if="isAuthenticating" justify="center" align="center" class="loader-wrapper">
     <n-spin />
   </n-space>
   <router-view v-else />
@@ -7,9 +7,16 @@
 <script lang="ts" setup>
 import { useAuth } from "../services/useAuth";
 import { NSpin, NSpace } from 'naive-ui';
+import { watch } from "@vue/runtime-core";
+import { useRouter } from "vue-router";
 
-const { isAuthenticating, currentUser, subscribe } = useAuth();
+const router = useRouter();
+const { isAuthenticating, isSignedIn, subscribe } = useAuth();
 subscribe();
+
+watch(isSignedIn, (value) => {
+  if (!value) router.push({ name: 'SignIn' })
+})
 
 </script>
 <style scoped>

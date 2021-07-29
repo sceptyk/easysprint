@@ -1,10 +1,10 @@
+import dayjs from 'dayjs';
 import firebase from 'firebase/app'
 import { Ref, ref } from 'vue';
 import { Board } from '../types/Board';
 import { BoardItem } from '../types/BoardItem';
 
 export const useBoardRepository = () => {
-
   const db = firebase.firestore();
 
   const fetchBoards = () => {
@@ -27,10 +27,9 @@ export const useBoardRepository = () => {
   const fetchBoard = (id: string) => {
     const item: Ref<Board | undefined> = ref();
     db.collection('boards').doc(id).onSnapshot(doc => {
-      const { title } = doc.data() as any;
       item.value = {
         id: doc.id,
-        title,
+        ...doc.data()
       } as Board
     })
 
@@ -43,11 +42,9 @@ export const useBoardRepository = () => {
     db.collection('boards').doc(id).collection('items').onSnapshot(snapshot => {
       const results: BoardItem[] = [];
       snapshot.forEach(doc => {
-        const { content, column } = doc.data();
         results.push({
           id: doc.id,
-          content,
-          column
+          ...doc.data()
         } as BoardItem)
       })
       list.value = results;
@@ -63,11 +60,27 @@ export const useBoardRepository = () => {
     })
   }
 
-  const createBoard = () => {
+  const removeBoardItem = (boardId: string, itemId: string) => {
+    return db.collection('boards').doc(boardId).collection('items').doc(itemId).delete();
+  }
+
+  const createBoard = (data: Partial<Board>) => {
     return db.collection('boards').add({
-      title: 'Untitlted',
+      title: `Sprint ${dayjs().format('L')}`,
+      ...data,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     })
+  }
+
+  const updateBoard = (boardId: string, data: Partial<Board>) => {
+    return db.collection('boards').doc(boardId).update({
+      ...data,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+  }
+
+  const removeBoard = (id: string) => {
+    return db.collection('boards').doc(id).delete();
   }
 
   return {
@@ -75,6 +88,9 @@ export const useBoardRepository = () => {
     fetchBoard,
     fetchBoardItems,
     createBoardItem,
-    createBoard
+    removeBoardItem,
+    createBoard,
+    updateBoard,
+    removeBoard,
   }
 }
